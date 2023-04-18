@@ -5,120 +5,58 @@
 /*                                                     +:+                    */
 /*   By: tmercier <tmercier@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2023/02/22 09:42:53 by tmercier      #+#    #+#                 */
-/*   Updated: 2023/03/14 18:28:44 by tmercier      ########   odam.nl         */
+/*   Created: 2023/04/12 15:58:15 by tmercier      #+#    #+#                 */
+/*   Updated: 2023/04/17 20:48:02 by tmercier      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-/*
-
-* ARGS
-	./philo 4 410 200 200
-			+-------------- philo_nb
-				+---------- time_die
-					+------ time_eat
-						+-- time_slp
- * FORMAT
-	timestamp_in_ms X has taken a fork
-	timestamp_in_ms X is eating
-	timestamp_in_ms X is sleeping
-	timestamp_in_ms X is thinking
-	timestamp_in_ms X died
-
- Minimum time_die for EVEN philo_nb:  2 x time_eat + e
-
- */
-
 #ifndef PHILO_H
-#define PHILO_H
+# define PHILO_H
 
-#include "../libs/inc/lib42.h"
-#include <pthread.h>
-#include <string.h>
-#include <sys/time.h>
-#include <time.h>
+# include "_philo.h"
 
-#define LOCK pthread_mutex_lock
-#define UNLOCK pthread_mutex_unlock
-#define INIT pthread_mutex_init
-#define EATS 0
-#define FORKS 1
-#define SLEEPS 2
-#define THINKS 3
-#define DEAD 4
-#define END 5
+# define ERR_INPUT_ARGS "error usage: ./philo <number_of_philosophers> \
+<time_to_die> <time_to_eat> <time_to_sleep> \
+[number_of_times_each_philosopher_must_eat]\n"
+# define ERR_INPUT_DIGIT "error input: \
+enter a valid unsigned integer between 1 and 2147483647.\n"
+# define ERR_DATA "error: invalid number of philosophers.\n"
+# define ERR_THREAD_CREATE "error: Could not create thread.\n"
+# define ERR_THREAD_JOIN "error: Could not join thread.\n"
+# define ERR_MALLOC "error: Could not allocate memory.\n"
+# define ERR_MUTEX "error: Could not create mutex.\n"
+# define ERR_PARSING "error: Could not find any string to parse.\n"
 
+# define PURPLE "\x1b[35m"
+# define RED "\x1b[31m"
+# define GREEN "\x1b[32m"
+# define YELLOW "\x1b[33m"
+# define BLUE "\x1b[34m"
+# define CYAN "\x1b[36m"
 
-typedef struct s_philo t_philo;
-typedef struct s_args t_args;
-typedef struct s_threads t_threads;
-typedef struct s_mutex t_mutex;
-typedef struct s_status t_status;
-typedef struct s_monitor t_monitor;
-
-enum e_state {
-	EAT,
-	FORK,
-	SLEEP,
-	THINK,
-	DIE,
-};
-
-// index of the left neighbor of philosopher i,
-// for whom both forks are available
-static inline size_t left(size_t i, size_t total)
+static inline int	lock_stop(t_philo *philo)
 {
-	return ((i - 1 + total) % total);
+	return (pthread_mutex_lock(&philo->data->lock[STOP].mutex));
 }
 
-// number of the right neighbour of the philosopher i,
-// for whom both forks are available
-static inline size_t right(size_t i, size_t total)
+static inline int	unlock_stop(t_philo *philo)
 {
-	return ((i + 1) % total);
+	return (pthread_mutex_unlock(&philo->data->lock[STOP].mutex));
 }
 
-struct s_status {
-	enum e_state state;
-	const char *msg;
-};
-
-struct s_args
+static inline int	lock_count(t_philo *philo)
 {
-	int total;
-	int t_die;
-	int t_eat;
-	int t_sleep;
-	int must_eat;
-};
+	return (pthread_mutex_lock(&philo->data->lock[COUNT].mutex));
+}
 
+static inline int	unlock_count(t_philo *philo)
+{
+	return (pthread_mutex_unlock(&philo->data->lock[COUNT].mutex));
+}
 
-struct s_philo {
-	int id;
-	int eat_count;
-	uint64_t last_eat;
-	int state;
-	int left;
-	int right;
-	int end;
-	uint64_t runtime;
-	uint64_t currtime;
-	bool is_dead;
-	bool is_eating;
-	t_args args;
-	t_status status[5];
-	pthread_mutex_t _end;
-	pthread_mutex_t *_fork;
-	pthread_t id_t;
-	// pthread_mutex_t _philo;
-};
-
-void init_status(t_philo *philo);
-uint64_t get_time(uint64_t *prev);
-void _usleep(uint64_t time_in_ms);
-void log_msg(t_philo *philo, enum e_state state);
-bool is_finished(t_philo *philo);
-bool is_dead(t_philo *philo);
-void init_philo(t_philo *philo, t_args a);
+static inline int	unlock_time(t_philo *philo)
+{
+	return (pthread_mutex_unlock(&philo->data->lock[TIME].mutex));
+}
 
 #endif

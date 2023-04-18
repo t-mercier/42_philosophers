@@ -6,39 +6,41 @@
 #    By: tmercier <tmercier@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
 #    Created: 2021/12/02 17:13:26 by tmercier      #+#    #+#                  #
-#    Updated: 2023/03/14 12:12:56 by tmercier      ########   odam.nl          #
+#    Updated: 2023/04/18 11:11:37 by tmercier      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
-CFLAGS 	+= 	-g3 -fsanitize=address -I.
-SRCS 	= 	philo.c util.c
+# ifdef FSANT
+# 	CFLAGS 	+= -g -fsanitize=thread
+# endif
+# ifdef FSANA
+# 	CFLAGS 	+= -g -fsanitize=address
+# endif
+CFLAGS 	+= 	-I. -Werror -Wall -Wextra
+SRCS 	= 	main.c threads.c mutex.c check.c logs.c actions.c time.c utils.c
 OBJS 	=	$(addprefix out/, $(SRCS:.c=.o))
 BIN 	= 	philo
-LFLAGS 	+= 	-lreadline
 CC 		= 	cc
 
 $(shell mkdir -p out)
 
 all: $(BIN)
-	$(MAKE) -C ../libs
 
-$(BIN): $(OBJS) ../libs/lib42.a
-	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
+$(BIN): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
 
-out/%.o: %.c philo.h
+out/%.o: %.c philo.h _philo.h
+	@if ! [ -d out ]; then mkdir out; fi
 	@printf "$(CYAN)Compiling: $(RESET)$(notdir $<)\n"
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
-../libs/lib42.a:
-	$(MAKE) -C ../libs
-
 clean:
-	$(MAKE) -C ../libs clean
-	rm -rf $(OBJS)
+	@if [ -d out ]; then rm -rf out; fi
+	@printf "$(CYAN)\n-> obj cleaned\n$(RESET)"
 
 fclean: clean
-	$(MAKE) -C ../libs fclean
-	rm -rf $(BIN)
+	@printf "$(CYAN)\n-> bin file cleaned\n$(RESET)"
+	@rm -rf $(BIN)
 
 re: fclean all
 
