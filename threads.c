@@ -6,7 +6,7 @@
 /*   By: tmercier <tmercier@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/04/13 16:07:37 by tmercier      #+#    #+#                 */
-/*   Updated: 2023/04/17 20:59:19 by tmercier      ########   odam.nl         */
+/*   Updated: 2023/04/19 16:31:43 by tmercier      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ void	*monitor(void *arg)
 			if (game_over(&philo[i]))
 				return (NULL);
 			if (is_dead(&philo[i]) && philo->status->flag != FULL)
-				return (log_die(philo), NULL);
+				return (log_die(&philo[i]), NULL);
 			full = ate_enough(philo, i, full);
 			if (full < 0 || game_over(&philo[i]))
 				return (NULL);

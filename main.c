@@ -6,7 +6,7 @@
 /*   By: tmercier <tmercier@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/02/22 09:47:45 by tmercier      #+#    #+#                 */
-/*   Updated: 2023/04/17 20:57:57 by tmercier      ########   odam.nl         */
+/*   Updated: 2023/04/19 16:12:09 by tmercier      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ int	main(int ac, char **av)
 	parse_args(ac, av, &data);
 	if (data.error)
 		return (error(ERR_INPUT_DIGIT), -1);
-	if (data.total < 1 || data.total > 200)
+	if (data.total < 1 || data.total > 2000)
 		return (error(ERR_DATA), -1);
 	philo = ft_malloc(sizeof(t_philo) * data.total);
 	if (simulation(&data, philo) < 0)
