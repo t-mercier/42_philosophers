@@ -1,5 +1,4 @@
 # Philosopher 
-### Handle +1000 philo 😎  
 
 This project was developed as part of the 42 school curriculum. The Philosopher project aims to simulate the Dining Philosophers problem, a classic synchronization problem in computer science, to better understand the principles of multithreading and concurrency. 
 
